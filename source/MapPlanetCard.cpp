@@ -44,6 +44,13 @@ MapPlanetCard::MapPlanetCard(const StellarObject &object, unsigned number, bool 
 	hasShipyard = planet->HasShipyard();
 	hasOutfitter = planet->HasOutfitter();
 	governmentName = planet->GetGovernment()->GetName();
+	if(governmentName != "Uninhabited")
+	{
+		if(!lastGovernmentName.empty() && governmentName != lastGovernmentName)
+			hasGovernments = true;
+		else
+			lastGovernmentName = governmentName;
+	}
 
 	if(!hasSpaceport)
 		reputationLabel = "No Spaceport";
@@ -141,7 +148,7 @@ bool MapPlanetCard::DrawIfFits(const Point &uiPoint)
 		const auto alignLeft = Layout(planetCardInterface->GetValue("width") - planetIconMaxSize, Truncate::BACK);
 
 		// Height of one MapPlanetCard element.
-		const double height = planetCardInterface->GetValue("height");
+		const double height = Height();
 		// Point at which the text starts (after the top margin), at first there is the planet's name,
 		// and then it is divided into clickable categories of the same size.
 		const double textStart = planetCardInterface->GetValue("text start");
@@ -256,6 +263,24 @@ void MapPlanetCard::Select(bool select)
 
 
 
+double MapPlanetCard::Height()
+{
+	const Interface *planetCardInterface = GameData::Interfaces().Get("map planet card");
+	return planetCardInterface->GetValue("extra height") +
+		(planetCardInterface->GetValue("categories") + hasGovernments) *
+		planetCardInterface->GetValue("category size");
+}
+
+
+
+void MapPlanetCard::ResetSize()
+{
+	lastGovernmentName.empty();
+	hasGovernments = false;
+}
+
+
+
 void MapPlanetCard::Highlight(double availableSpace) const
 {
 	const Interface *planetCardInterface = GameData::Interfaces().Get("map planet card");
@@ -269,20 +294,17 @@ void MapPlanetCard::Highlight(double availableSpace) const
 
 double MapPlanetCard::AvailableTopSpace() const
 {
-	const Interface *planetCardInterface = GameData::Interfaces().Get("map planet card");
-	const double height = planetCardInterface->GetValue("height");
+	const double height = Height();
 	return min(height, max(0., (number + 1) * height - MapDetailPanel::GetScroll()));
 }
 
 
 
-double MapPlanetCard::AvailableBottomSpace() const
+double MapPlanetCard::AvailableBottomSpace()
 {
 	const Interface *mapInterface = GameData::Interfaces().Get("map detail panel");
 	double maxPlanetPanelHeight = mapInterface->GetValue("max planet panel height");
-	const Interface *planetCardInterface = GameData::Interfaces().Get("map planet card");
-	double height = planetCardInterface->GetValue("height");
 
-	return min(height, max(0., Screen::Top() +
+	return min(Height(), max(0., Screen::Top() +
 		min(MapDetailPanel::PlanetPanelHeight(), maxPlanetPanelHeight) - yCoordinate));
 }
