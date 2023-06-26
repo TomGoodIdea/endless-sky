@@ -34,6 +34,9 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 using namespace std;
 
+std::string MapPlanetCard::lastGovernmentName;
+bool MapPlanetCard::hasGovernments = false;
+
 
 
 MapPlanetCard::MapPlanetCard(const StellarObject &object, unsigned number, bool hasVisited)
