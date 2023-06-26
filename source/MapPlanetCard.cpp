@@ -278,7 +278,7 @@ double MapPlanetCard::Height()
 
 void MapPlanetCard::ResetSize()
 {
-	lastGovernmentName.empty();
+	lastGovernmentName.clear();
 	hasGovernments = false;
 }
 
