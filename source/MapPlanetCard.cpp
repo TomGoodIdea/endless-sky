@@ -194,12 +194,12 @@ bool MapPlanetCard::DrawIfFits(const Point &uiPoint)
 		};
 
 		// Draw the name of the planet.
-		if(FitsCategory(6.))
+		if(FitsCategory(categories + hasGovernments))
 			font.Draw({ planetName, alignLeft }, uiPoint + Point(0, textStart), isSelected ? medium : dim);
 
 		// Draw the government name, reputation, shipyard, outfitter and visited.
 		const double margin = mapInterface->GetValue("text margin");
-		if(FitsCategory(5.))
+		if(hasGovernments && FitsCategory(categories))
 			font.Draw(governmentName, uiPoint + Point(margin, textStart + categorySize),
 				governmentName == "Uninhabited" ? faint : medium);
 		if(FitsCategory(4.))
