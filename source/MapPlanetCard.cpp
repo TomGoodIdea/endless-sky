@@ -47,12 +47,12 @@ MapPlanetCard::MapPlanetCard(const StellarObject &object, unsigned number, bool 
 	hasShipyard = planet->HasShipyard();
 	hasOutfitter = planet->HasOutfitter();
 	governmentName = planet->GetGovernment()->GetName();
-	if(governmentName != "Uninhabited")
+	if(planet->IsInhabited())
 	{
-		if(!lastGovernmentName.empty() && governmentName != lastGovernmentName)
-			hasGovernments = true;
-		else
+		if(lastGovernmentName.empty())
 			lastGovernmentName = governmentName;
+		else if(governmentName != lastGovernmentName)
+			hasGovernments = true;
 	}
 
 	if(!hasSpaceport)
