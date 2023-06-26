@@ -190,7 +190,6 @@ bool MapDetailPanel::Scroll(double dx, double dy)
 // Only override the ones you need; the default action is to return false.
 bool MapDetailPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command, bool isNewPress)
 {
-	const Interface *planetCardInterface = GameData::Interfaces().Get("map planet card");
 	const double planetCardHeight = MapPlanetCard::Height();
 	if((key == SDLK_TAB || command.Has(Command::JUMP)) && player.Flagship())
 	{
