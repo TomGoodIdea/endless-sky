@@ -300,7 +300,7 @@ double MapPlanetCard::AvailableTopSpace() const
 
 
 
-double MapPlanetCard::AvailableBottomSpace()
+double MapPlanetCard::AvailableBottomSpace() const
 {
 	const Interface *mapInterface = GameData::Interfaces().Get("map detail panel");
 	double maxPlanetPanelHeight = mapInterface->GetValue("max planet panel height");
