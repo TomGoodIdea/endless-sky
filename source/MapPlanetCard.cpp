@@ -29,12 +29,13 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "Politics.h"
 #include "Screen.h"
 #include "SpriteShader.h"
+#include "System.h"
 #include "StellarObject.h"
 #include "text/WrappedText.h"
 
 using namespace std;
 
-std::string MapPlanetCard::lastGovernmentName;
+std::string MapPlanetCard::systemGovernmentName;
 bool MapPlanetCard::hasGovernments = false;
 
 
@@ -47,13 +48,10 @@ MapPlanetCard::MapPlanetCard(const StellarObject &object, unsigned number, bool 
 	hasShipyard = planet->HasShipyard();
 	hasOutfitter = planet->HasOutfitter();
 	governmentName = planet->GetGovernment()->GetName();
-	if(planet->IsInhabited())
-	{
-		if(lastGovernmentName.empty())
-			lastGovernmentName = governmentName;
-		else if(governmentName != lastGovernmentName)
-			hasGovernments = true;
-	}
+	if(systemGovernmentName.empty())
+		systemGovernmentName = planet->GetSystem()->GetGovernment()->GetName();
+	if(planet->GetGovernment()->GetName() != "Uninhabited" && governmentName != systemGovernmentName)
+		hasGovernments = true;
 
 	if(!hasSpaceport)
 		reputationLabel = "No Spaceport";
@@ -278,7 +276,7 @@ double MapPlanetCard::Height()
 
 void MapPlanetCard::ResetSize()
 {
-	lastGovernmentName.clear();
+	systemGovernmentName.clear();
 	hasGovernments = false;
 }
 

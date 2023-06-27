@@ -96,7 +96,7 @@ private:
 	// The currently select category (outfitter, shipyard, ...)
 	unsigned selectedCategory = 0;
 
-	static std::string lastGovernmentName;
+	static std::string systemGovernmentName;
 	static bool hasGovernments;
 };
 
