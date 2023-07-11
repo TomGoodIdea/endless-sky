@@ -106,7 +106,7 @@ MapPlanetCard::ClickAction MapPlanetCard::Click(int x, int y, int clicks)
 
 			// The first category is the planet name and is not selectable.
 			if(x > Screen::Left() + planetIconMaxSize &&
-					relativeY > textStart + categorySize && relativeY < textStart + categorySize * categories)
+					relativeY > textStart + categorySize && relativeY < textStart + categorySize * (categories + hasGovernments))
 				selectedCategory = (relativeY - textStart - categorySize) / categorySize;
 			else
 				clickAction = ClickAction::SELECTED;
@@ -116,7 +116,8 @@ MapPlanetCard::ClickAction MapPlanetCard::Click(int x, int y, int clicks)
 										MapPanel::SHOW_VISITED};
 			if(clickAction != ClickAction::SELECTED)
 			{
-				clickAction = static_cast<ClickAction>(SHOW[selectedCategory]);
+				// If there are no governments shown, the first category is the reputation.
+				clickAction = static_cast<ClickAction>(SHOW[selectedCategory + !hasGovernments]);
 				// Double clicking results in going to the shipyard/outfitter.
 				if(clickAction == ClickAction::SHOW_SHIPYARD && clicks > 1)
 					clickAction = ClickAction::GOTO_SHIPYARD;
@@ -201,17 +202,17 @@ bool MapPlanetCard::DrawIfFits(const Point &uiPoint)
 			font.Draw(governmentName, uiPoint + Point(margin, textStart + categorySize),
 				governmentName == "Uninhabited" ? faint : medium);
 		if(FitsCategory(4.))
-			font.Draw(reputationLabel, uiPoint + Point(margin, textStart + categorySize * 2.),
+			font.Draw(reputationLabel, uiPoint + Point(margin, textStart + categorySize * (1. + hasGovernments)),
 				hasSpaceport ? medium : faint);
 		if(FitsCategory(3.))
-			font.Draw("Shipyard", uiPoint + Point(margin, textStart + categorySize * 3.),
+			font.Draw("Shipyard", uiPoint + Point(margin, textStart + categorySize * (2. + hasGovernments)),
 				hasShipyard ? medium : faint);
 		if(FitsCategory(2.))
-			font.Draw("Outfitter", uiPoint + Point(margin, textStart + categorySize * 4.),
+			font.Draw("Outfitter", uiPoint + Point(margin, textStart + categorySize * (3. + hasGovernments)),
 				hasOutfitter ? medium : faint);
 		if(FitsCategory(1.))
 			font.Draw(hasVisited ? "(has been visited)" : "(not yet visited)",
-				uiPoint + Point(margin, textStart + categorySize * 5.), dim);
+				uiPoint + Point(margin, textStart + categorySize * (4. + hasGovernments)), dim);
 
 		// Draw the arrow pointing to the selected category.
 		if(FitsCategory(categories - (selectedCategory + 1.)))
