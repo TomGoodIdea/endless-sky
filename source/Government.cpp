@@ -469,7 +469,7 @@ double Government::AttitudeToward(const Government *other) const
 		return 1.;
 
 	if(attitudeToward.size() <= other->id)
-		return 0.;
+		return defaultAttitude;
 
 	double attitude = attitudeToward[other->id];
 	return std::isnan(attitude) ? defaultAttitude : attitude;
