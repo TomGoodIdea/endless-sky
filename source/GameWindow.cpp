@@ -179,6 +179,15 @@ bool GameWindow::Init(bool headless)
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 
 	context = SDL_GL_CreateContext(mainWindow);
+#ifdef _WIN32
+	if(!context)
+	{
+		Logger::LogError("OpenGL context creation failed. Retrying with experimental OpenGL 2 support.");
+		SDL_ClearError();
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+		context = SDL_GL_CreateContext(mainWindow);
+	}
+#endif
 	if(!context)
 	{
 		ExitWithError("Unable to create OpenGL context! Check if your system supports OpenGL 3.0.");
@@ -223,15 +232,18 @@ bool GameWindow::Init(bool headless)
 		return false;
 	}
 
-	if(*glVersion < '3')
+	if(*glVersion < '2')
 	{
 		ostringstream out;
-		out << "Endless Sky requires OpenGL version 3.0 or higher." << endl;
+		out << "Endless Sky requires OpenGL version 2.0 or higher." << endl;
 		out << "Your OpenGL version is " << glVersion << ", GLSL version " << glslVersion << "." << endl;
 		out << "Please update your graphics drivers.";
 		ExitWithError(out.str());
 		return false;
 	}
+	else if(*glVersion == '2')
+		Logger::LogError("Experimental OpenGL 2 support has been enabled.");
+	OpenGL::Init(*glVersion > '2');
 
 	// OpenGL settings
 	glClearColor(0.f, 0.f, 0.0f, 1.f);

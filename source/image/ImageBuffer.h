@@ -62,7 +62,7 @@ public:
 	const uint32_t *Begin(int y, int frame = 0) const;
 	uint32_t *Begin(int y, int frame = 0);
 
-	void ShrinkToHalfSize();
+	void Shrink(int factor);
 
 	// Read frames from a file. Return the number of frames read,
 	// or 0 if an error is encountered - either the

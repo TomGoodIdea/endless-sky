@@ -155,26 +155,33 @@ uint32_t *ImageBuffer::Begin(int y, int frame)
 
 
 
-void ImageBuffer::ShrinkToHalfSize()
+void ImageBuffer::Shrink(int factor)
 {
-	ImageBuffer result(frames);
-	result.Allocate(width / 2, height / 2);
+	ImageBuffer result{frames};
+	result.Allocate(width / factor, height / factor);
 
-	unsigned char *begin = reinterpret_cast<unsigned char *>(pixels);
-	unsigned char *out = reinterpret_cast<unsigned char *>(result.pixels);
-	// Loop through every line of every frame of the buffer.
-	for(int y = 0; y < result.height * frames; ++y)
-	{
-		unsigned char *aIt = begin + (4 * width) * (2 * y);
-		unsigned char *aEnd = aIt + 4 * 2 * result.width;
-		unsigned char *bIt = begin + (4 * width) * (2 * y + 1);
-		for( ; aIt != aEnd; aIt += 4, bIt += 4)
-		{
-			for(int channel = 0; channel < 4; ++channel, ++aIt, ++bIt, ++out)
-				*out = (static_cast<unsigned>(aIt[0]) + static_cast<unsigned>(bIt[0])
-					+ static_cast<unsigned>(aIt[4]) + static_cast<unsigned>(bIt[4]) + 2) / 4;
-		}
-	}
+	// Each pixel of the shrinked buffer corresponds to a factor x factor
+	// square section of the original buffer.
+	for(int frame = 0; frame < frames; ++frame)
+		for(int resY = 0; resY < result.height; ++resY)
+			for(int resX = 0; resX < result.width; ++resX)
+			{
+				int sum[4] = {};
+				for(int srcY = resY * factor; srcY < (resY + 1) * factor; ++srcY)
+					for(int srcX = resX * factor; srcX < (resX + 1) * factor; ++srcX)
+					{
+						auto srcPixel = reinterpret_cast<unsigned char *>(
+							pixels + frame * height * width + srcY * width + srcX);
+						for(int channel = 0; channel < 4; ++channel)
+							sum[channel] += srcPixel[channel];
+					}
+				auto resPixel = reinterpret_cast<unsigned char *>(
+					result.pixels + frame * result.height * result.width +  resY * result.width + resX);
+				// Average the color data.
+				for(int channel = 0; channel < 4; ++channel)
+					resPixel[channel] = sum[channel] / (factor * factor);
+			}
+
 	swap(width, result.width);
 	swap(height, result.height);
 	swap(pixels, result.pixels);
